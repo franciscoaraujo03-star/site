@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Francisco Araújo — Aerospace Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Barlow:ital,wght@0,300;0,400;0,600;0,700;1,300;1,700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   RESET & ROOT
+   Palette: deep void (#03050a), neon cyan (#00c8e8), 
+   pulse green (#00e8a0), amber (#ffaa00), violet (#9b4dff)
+   Fonts: Syne (display/titles), Barlow (body), DM Mono (tech/labels)
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* Garante que o cursor padrão desaparece em ABSOLUTAMENTE tudo */
+* {
+  cursor: none !important;
+}
+
+/* Garante que o teu cursor personalizado ignore cliques para não bloquear o site */
+.cursor-dot, .cursor-ring {
+  pointer-events: none !important;
+  user-select: none;
+}
+:root {
+  /* Core palette */
+  --void:      #03050a;
+  --deep:      #060c16;
+  --surface:   #0b1624;
+  --glass:     rgba(11, 22, 36, 0.75);
+  --border:    rgba(0, 200, 232, 0.08);
+  --border-hi: rgba(0, 200, 232, 0.22);
+
+  /* Accent neons */
+  --cyan:      #00c8e8;
+  --cyan-dim:  rgba(0, 200, 232, 0.12);
+  --green:     #00e8a0;
+  --green-dim: rgba(0, 232, 160, 0.1);
+  --amber:     #ffaa00;
+  --amber-dim: rgba(255, 170, 0, 0.1);
+  --violet:    #9b4dff;
+  --violet-dim:rgba(155, 77, 255, 0.1);
+
+  /* Text */
+  --text-primary:   #e8f2ff;
+  --text-secondary: rgba(180, 210, 240, 0.6);
+  --text-muted:     rgba(100, 140, 180, 0.45);
+
+  /* Typography */
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'Barlow', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  /* Spacing */
+  --section-gap: 10rem;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--void);
+  color: var(--text-primary);
+  line-height: 1.65;
+  overflow-x: hidden;
+  cursor: none; /* custom cursor */
+}
+
+/* ============================================================
+   CUSTOM CURSOR — premium interactive feel
+   ============================================================ */
+.cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+}
+.cursor-dot {
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  border-radius: 50%;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s;
+  pointer-events: none;
+  z-index: 10001;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(0,200,232,0.5);
+  border-radius: 50%;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  transition: all 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none;
+  z-index: 10000;
+}
+body.hovering .cursor-ring {
+  width: 56px; height: 56px;
+  border-color: var(--cyan);
+  background: rgba(0,200,232,0.04);
+}
+
+/* ============================================================
+   GRAIN OVERLAY — subtle depth texture
+   ============================================================ */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9997; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+}
+
+/* ============================================================
+   CANVAS — animated starfield + aurora
+   ============================================================ */
+#bg-canvas {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+
+/* ============================================================
+   GRID LINES — HUD atmosphere
+   ============================================================ */
+.hud-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,200,232,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,232,0.018) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 10%, transparent 100%);
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 4rem;
+  background: rgba(3,5,10,0.82);
+  backdrop-filter: blur(28px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.4s;
+}
+nav.scrolled { background: rgba(3,5,10,0.96); }
+
+/* Left: wordmark */
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 0.82rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-primary);
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.nav-brand-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan), 0 0 20px rgba(0,200,232,0.4);
+  animation: pulse-dot 2.2s ease infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { transform: scale(1); box-shadow: 0 0 10px var(--cyan); }
+  50%      { transform: scale(1.35); box-shadow: 0 0 18px var(--cyan), 0 0 32px rgba(0,200,232,0.5); }
+}
+
+/* Center: links */
+.nav-links {
+  display: flex; list-style: none; gap: 0;
+  position: absolute; left: 50%; transform: translateX(-50%);
+}
+.nav-links a {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-muted); text-decoration: none;
+  padding: 0 1.6rem; height: 68px;
+  display: flex; align-items: center;
+  transition: color 0.2s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: 0; left: 1.6rem; right: 1.6rem;
+  height: 1px; background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  transform: scaleX(0) translateY(0);
+  transition: transform 0.28s cubic-bezier(0.77,0,0.175,1);
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+/* Right: status */
+.nav-status {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  color: var(--green); letter-spacing: 0.1em;
+  display: flex; align-items: center; gap: 0.55rem;
+}
+.status-pip {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green); box-shadow: 0 0 8px var(--green);
+  animation: pulse-dot 1.8s ease infinite;
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+#hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 10rem 2rem 8rem;
+  position: relative; z-index: 1;
+  overflow: hidden;
+}
+
+/* Animated aurora rings */
+.hero-rings {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none; z-index: 0;
+}
+.ring {
+  position: absolute; border-radius: 50%;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  border: 1px solid;
+}
+.ring-1 { width: 260px; height: 260px; border-color: rgba(0,200,232,0.1); animation: ringBreath 5s 0s ease-in-out infinite; }
+.ring-2 { width: 460px; height: 460px; border-color: rgba(0,200,232,0.06); animation: ringBreath 5s 0.7s ease-in-out infinite; }
+.ring-3 { width: 680px; height: 680px; border-color: rgba(0,200,232,0.035); animation: ringBreath 5s 1.4s ease-in-out infinite; }
+.ring-4 { width: 920px; height: 920px; border-color: rgba(0,200,232,0.018); animation: ringBreath 5s 2.1s ease-in-out infinite; }
+.ring-5 { width: 1180px; height: 1180px; border-color: rgba(0,200,232,0.01); animation: ringBreath 5s 2.8s ease-in-out infinite; }
+@keyframes ringBreath {
+  0%,100% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); }
+  50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.02); }
+}
+
+/* Radar sweep */
+.radar-sweep {
+  position: absolute; top: 50%; left: 50%;
+  width: 500px; height: 1px;
+  transform-origin: 0 0;
+  background: linear-gradient(90deg, rgba(0,200,232,0.6), transparent 60%);
+  animation: sweep 10s linear infinite;
+  pointer-events: none; z-index: 0;
+}
+.radar-sweep::after {
+  content: '';
+  position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan);
+}
+@keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Hero content */
+.hero-badge {
+  position: relative; z-index: 2;
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--green);
+  padding: 0.38rem 1.1rem;
+  border: 1px solid rgba(0,232,160,0.22);
+  background: rgba(0,232,160,0.05);
+  margin-bottom: 2.8rem;
+  animation: fadeRise 1s 0.1s both;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+}
+
+.hero-name {
+  position: relative; z-index: 2;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 9.5vw, 8.5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  margin-bottom: 1.4rem;
+  animation: fadeRise 1s 0.2s both;
+}
+.hero-name .first {
+  display: block;
+  background: linear-gradient(160deg, #ffffff 0%, rgba(200,230,255,0.9) 40%, var(--cyan) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 40px rgba(0,200,232,0.15));
+}
+.hero-name .last {
+  display: block;
+  background: linear-gradient(160deg, var(--cyan) 0%, rgba(0,200,232,0.5) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+.hero-title {
+  position: relative; z-index: 2;
+  font-family: var(--font-mono); font-size: 0.78rem;
+  color: var(--text-muted); letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: fadeRise 1s 0.3s both;
+  display: flex; align-items: center; justify-content: center; gap: 1.2rem;
+}
+.hero-title .divider { color: var(--amber); opacity: 0.6; font-size: 0.5rem; }
+
+.hero-desc {
+  position: relative; z-index: 2;
+  max-width: 440px;
+  font-size: 1rem; font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  margin-bottom: 3.5rem;
+  animation: fadeRise 1s 0.4s both;
+}
+
+.hero-actions {
+  position: relative; z-index: 2;
+  display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  animation: fadeRise 1s 0.5s both;
+}
+
+/* Primary CTA button */
+.btn-cta {
+  position: relative;
+  padding: 0.9rem 2.6rem;
+  font-family: var(--font-display); font-size: 0.78rem;
+  font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--void); text-decoration: none;
+  background: var(--cyan);
+  overflow: hidden;
+  transition: all 0.3s;
+  clip-path: polygon(14px 0%, 100% 0%, calc(100% - 14px) 100%, 0% 100%);
+}
+.btn-cta::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+.btn-cta:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,200,232,0.35); }
+.btn-cta:hover::before { transform: translateX(100%); }
+
+/* Ghost button */
+.btn-ghost {
+  padding: 0.9rem 2.4rem;
+  font-family: var(--font-display); font-size: 0.78rem;
+  font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-primary); text-decoration: none;
+  border: 1px solid var(--border-hi);
+  background: transparent;
+  transition: all 0.3s;
+}
+.btn-ghost:hover {
+  border-color: rgba(0,200,232,0.5);
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  transform: translateY(-3px);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+  z-index: 2; animation: fadeRise 1s 1s both;
+}
+.scroll-indicator span {
+  font-family: var(--font-mono); font-size: 0.55rem;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-muted);
+}
+.scroll-track {
+  width: 1px; height: 48px;
+  background: linear-gradient(to bottom, var(--cyan), transparent);
+  animation: scrollPulse 2.5s ease-in-out infinite;
+}
+@keyframes scrollPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+/* ============================================================
+   SECTION SHARED STYLES
+   ============================================================ */
+section { position: relative; z-index: 1; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; }
+
+.sec-label {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 0.65rem;
+  display: flex; align-items: center; gap: 0.9rem;
+}
+.sec-label::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+}
+
+.sec-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 800; line-height: 1.05; letter-spacing: -0.02em;
+  color: var(--text-primary); margin-bottom: 0.3rem;
+}
+.sec-title .hi {
+  background: linear-gradient(135deg, var(--cyan), var(--green));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* Reveal animations */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+.reveal.delay-1 { transition-delay: 0.1s; }
+.reveal.delay-2 { transition-delay: 0.2s; }
+.reveal.delay-3 { transition-delay: 0.3s; }
+.reveal.delay-4 { transition-delay: 0.4s; }
+
+/* ============================================================
+   ABOUT SECTION
+   ============================================================ */
+#about { padding: var(--section-gap) 0; }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 7rem;
+  align-items: start;
+  margin-top: 4rem;
+}
+
+/* Photo with HUD frame */
+.photo-wrap {
+  position: relative;
+}
+.photo-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: var(--surface);
+}
+.photo-frame img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center 85%;
+  filter: brightness(0.88) contrast(1.05);
+  transition: filter 0.4s, transform 0.6s;
+}
+.photo-frame:hover img {
+  filter: brightness(0.95) contrast(1.08);
+  transform: scale(1.03);
+}
+/* HUD corner brackets */
+.hud-corner {
+  position: absolute; width: 20px; height: 20px; z-index: 2;
+}
+.hud-corner.tl { top: 0; left: 0; border-top: 1.5px solid var(--cyan); border-left: 1.5px solid var(--cyan); }
+.hud-corner.tr { top: 0; right: 0; border-top: 1.5px solid var(--cyan); border-right: 1.5px solid var(--cyan); }
+.hud-corner.bl { bottom: 0; left: 0; border-bottom: 1.5px solid var(--cyan); border-left: 1.5px solid var(--cyan); }
+.hud-corner.br { bottom: 0; right: 0; border-bottom: 1.5px solid var(--cyan); border-right: 1.5px solid var(--cyan); }
+/* Scan line effect */
+.photo-frame::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 55%, rgba(3,5,10,0.7) 100%);
+  pointer-events: none; z-index: 1;
+}
+
+/* Education stack */
+.edu-list { margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.edu-item {
+  padding: 0.85rem 1rem;
+  background: rgba(11,22,36,0.7);
+  border: 1px solid var(--border);
+  border-left: 2px solid transparent;
+  transition: all 0.25s;
+  cursor: default;
+}
+.edu-item:hover {
+  border-left-color: var(--cyan);
+  background: var(--cyan-dim);
+  transform: translateX(4px);
+}
+.edu-deg { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.15rem; }
+.edu-meta { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-muted); letter-spacing: 0.05em; }
+
+/* About body */
+.about-body p {
+  font-size: 0.97rem; font-weight: 300;
+  color: var(--text-secondary); line-height: 1.9;
+  margin-bottom: 1rem;
+}
+.about-body p strong { color: var(--text-primary); font-weight: 600; }
+
+/* Stats grid */
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.8rem; margin-top: 2.8rem; }
+.stat-card {
+  padding: 1.1rem 0.8rem;
+  background: rgba(11,22,36,0.6);
+  border: 1px solid var(--border);
+  text-align: center;
+  position: relative; overflow: hidden;
+  transition: all 0.28s;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  transform: scaleX(0); transition: transform 0.4s;
+}
+.stat-card:hover::before { transform: scaleX(1); }
+.stat-card:hover { background: var(--cyan-dim); border-color: var(--border-hi); }
+.stat-val {
+  display: block;
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 800;
+  color: var(--cyan); line-height: 1; margin-bottom: 0.4rem;
+}
+.stat-lbl {
+  display: block;
+  font-family: var(--font-mono); font-size: 0.56rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   EXPERIENCE SECTION
+   ============================================================ */
+#experience {
+  padding: var(--section-gap) 0;
+  background: linear-gradient(180deg, transparent, rgba(0,10,24,0.5) 50%, transparent);
+}
+
+.exp-list { margin-top: 4rem; display: flex; flex-direction: column; gap: 1px; }
+
+.exp-item {
+  position: relative;
+  display: grid; grid-template-columns: 120px 1fr;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.28s;
+}
+.exp-item::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: var(--cyan); box-shadow: 0 0 12px var(--cyan);
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform 0.36s cubic-bezier(0.77,0,0.175,1);
+}
+.exp-item:hover::before { transform: scaleY(1); }
+.exp-item:hover { background: rgba(0,200,232,0.025); }
+
+/* Variant colors */
+.exp-item.v-green::before { background: var(--green); box-shadow: 0 0 12px var(--green); }
+.exp-item.v-green:hover { background: rgba(0,232,160,0.022); }
+.exp-item.v-amber::before { background: var(--amber); box-shadow: 0 0 12px var(--amber); }
+.exp-item.v-amber:hover { background: rgba(255,170,0,0.02); }
+.exp-item.v-violet::before { background: var(--violet); box-shadow: 0 0 12px var(--violet); }
+.exp-item.v-violet:hover { background: rgba(155,77,255,0.02); }
+
+.exp-date-col {
+  padding: 2rem 0 2rem 1.5rem;
+  font-family: var(--font-mono); font-size: 0.58rem;
+  color: var(--text-muted); letter-spacing: 0.04em; line-height: 1.7;
+  border-right: 1px solid var(--border);
+}
+.exp-content-col {
+  padding: 1.8rem 1.5rem 1.8rem 1.8rem;
+  display: flex; align-items: center;
+}
+.exp-info { flex: 1; }
+.exp-num {
+  font-family: var(--font-mono); font-size: 0.52rem;
+  color: rgba(0,200,232,0.28); letter-spacing: 0.12em; margin-bottom: 0.3rem;
+}
+.exp-role {
+  font-family: var(--font-display); font-size: 1.02rem; font-weight: 700;
+  color: var(--text-primary); line-height: 1.2; margin-bottom: 0.3rem;
+}
+.exp-org {
+  font-family: var(--font-mono); font-size: 0.64rem;
+  color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.6rem;
+}
+.exp-brief { font-size: 0.84rem; font-weight: 300; color: var(--text-secondary); line-height: 1.65; }
+.exp-arrow {
+  font-size: 0.95rem; color: var(--text-muted);
+  padding-right: 0.5rem; flex-shrink: 0;
+  transition: all 0.22s; margin-left: 1rem;
+}
+.exp-item:hover .exp-arrow { color: var(--cyan); transform: translateX(5px); }
+.exp-item.v-green:hover .exp-arrow { color: var(--green); }
+.exp-item.v-amber:hover .exp-arrow { color: var(--amber); }
+.exp-item.v-violet:hover .exp-arrow { color: var(--violet); }
+
+/* ============================================================
+   SKILLS SECTION
+   ============================================================ */
+#skills { padding: var(--section-gap) 0; }
+
+.skills-wrap { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.6rem; margin-top: 4rem; }
+
+.skill-card {
+  padding: 2.2rem;
+  background: rgba(6,12,22,0.9);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+/* Animated top line on hover */
+.skill-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  transform: scaleX(0); transition: transform 0.4s;
+}
+.skill-card:hover { background: rgba(0,200,232,0.025); }
+.skill-card:nth-child(1)::before { background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
+.skill-card:nth-child(2)::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.skill-card:nth-child(3)::before { background: linear-gradient(90deg, transparent, var(--amber), transparent); }
+.skill-card:hover::before { transform: scaleX(1); }
+.skill-card:nth-child(1):hover { border-color: rgba(0,200,232,0.15); }
+.skill-card:nth-child(2):hover { border-color: rgba(0,232,160,0.15); }
+.skill-card:nth-child(3):hover { border-color: rgba(255,170,0,0.12); }
+
+/* HUD corner accent */
+.skill-card::after {
+  content: '';
+  position: absolute; bottom: -1px; right: -1px;
+  width: 14px; height: 14px; border-bottom: 1px solid; border-right: 1px solid;
+  transition: width 0.3s, height 0.3s;
+}
+.skill-card:nth-child(1)::after { border-color: var(--cyan); }
+.skill-card:nth-child(2)::after { border-color: var(--green); }
+.skill-card:nth-child(3)::after { border-color: var(--amber); }
+.skill-card:hover::after { width: 24px; height: 24px; }
+
+.skill-header {
+  display: flex; align-items: center; gap: 0.85rem;
+  margin-bottom: 2rem; padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.skill-icon {
+  width: 34px; height: 34px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.skill-label {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+}
+
+/* Skill bars */
+.skill-row { margin-bottom: 1.15rem; }
+.skill-row-top { display: flex; justify-content: space-between; margin-bottom: 0.45rem; }
+.skill-name { font-size: 0.84rem; font-weight: 500; color: var(--text-primary); }
+.skill-pct { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-muted); }
+.bar-track { height: 1.5px; background: rgba(255,255,255,0.06); }
+.bar-fill { height: 100%; width: 0; transition: width 1.6s cubic-bezier(0.25,1,0.5,1); }
+
+/* Soft skill tags */
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  padding: 0.32rem 0.8rem;
+  border: 1px solid rgba(255,170,0,0.14);
+  color: rgba(255,170,0,0.5);
+  transition: all 0.22s;
+  clip-path: polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%);
+}
+.tag:hover {
+  border-color: rgba(255,170,0,0.4);
+  color: var(--amber);
+  background: var(--amber-dim);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   CONTACT SECTION
+   ============================================================ */
+#contact { padding: var(--section-gap) 0 8rem; }
+
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7rem; align-items: start; margin-top: 4rem; }
+
+.contact-text {
+  font-size: 0.97rem; font-weight: 300;
+  color: var(--text-secondary); line-height: 1.9;
+  margin-bottom: 2.2rem;
+}
+
+.contact-links { display: flex; flex-direction: column; gap: 0.6rem; }
+.contact-link {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.9rem 1.2rem;
+  background: rgba(11,22,36,0.6);
+  border: 1px solid var(--border);
+  border-left: 2px solid transparent;
+  color: var(--text-primary); text-decoration: none;
+  font-family: var(--font-mono); font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  transition: all 0.25s;
+}
+.contact-link:hover {
+  border-left-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  transform: translateX(4px);
+}
+.contact-link-icon { font-size: 0.9rem; flex-shrink: 0; }
+
+.contact-right h3 {
+  font-family: var(--font-display); font-size: 1.8rem;
+  font-weight: 800; line-height: 1.1;
+  background: linear-gradient(135deg, var(--text-primary), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 0.85rem;
+}
+.contact-note {
+  font-size: 0.9rem; font-weight: 300;
+  color: var(--text-secondary); line-height: 1.8;
+  margin-bottom: 2.2rem;
+}
+
+/* Download CV button */
+.cv-btn {
+  display: inline-flex; align-items: center; gap: 0.8rem;
+  padding: 1rem 2.8rem;
+  font-family: var(--font-mono); font-size: 0.75rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--cyan); text-decoration: none;
+  border: 1px solid var(--cyan);
+  background: transparent;
+  position: relative; overflow: hidden;
+  transition: all 0.35s; margin-bottom: 2rem;
+}
+.cv-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--cyan);
+  transform: translateY(101%);
+  transition: transform 0.35s cubic-bezier(0.77,0,0.175,1);
+  z-index: 0;
+}
+.cv-btn:hover::before { transform: translateY(0); }
+.cv-btn:hover { color: var(--void); box-shadow: 0 0 36px rgba(0,200,232,0.3); }
+.cv-btn span { position: relative; z-index: 1; }
+
+/* Status box */
+.status-box {
+  padding: 1.3rem 1.5rem;
+  background: rgba(11,22,36,0.7);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.status-box::before {
+  content: '// STATUS';
+  position: absolute; top: -0.6rem; left: 1.2rem;
+  font-family: var(--font-mono); font-size: 0.55rem;
+  color: var(--cyan); letter-spacing: 0.22em;
+  background: var(--void); padding: 0 0.5rem;
+}
+.status-box p { font-size: 0.87rem; font-weight: 300; color: var(--text-secondary); line-height: 1.75; }
+.status-box strong { color: var(--text-primary); font-weight: 600; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 1.75rem 2.5rem;
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 1rem;
+  font-family: var(--font-mono); font-size: 0.58rem;
+  color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase;
+}
+.footer-brand { color: var(--cyan); font-weight: 500; }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(2,4,10,0.94);
+  backdrop-filter: blur(24px) saturate(1.2);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  width: 100%; max-width: 800px; max-height: 88vh;
+  overflow-y: auto; position: relative;
+  transform: translateY(40px) scale(0.98);
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+  scrollbar-width: thin; scrollbar-color: rgba(0,200,232,0.2) transparent;
+}
+.modal-overlay.open .modal-panel { transform: translateY(0) scale(1); }
+
+/* Modal HUD corners */
+.modal-panel::before { content: ''; position: absolute; top: -1px; left: -1px; width: 22px; height: 22px; border-top: 1.5px solid var(--cyan); border-left: 1.5px solid var(--cyan); z-index: 5; pointer-events: none; }
+.modal-panel::after  { content: ''; position: absolute; bottom: -1px; right: -1px; width: 22px; height: 22px; border-bottom: 1.5px solid var(--cyan); border-right: 1.5px solid var(--cyan); z-index: 5; pointer-events: none; }
+
+.modal-close {
+  position: sticky; top: 1.2rem; float: right; margin: 1.2rem 1.2rem 0 0;
+  width: 34px; height: 34px;
+  background: rgba(0,200,232,0.05); border: 1px solid var(--border-hi);
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 0.78rem;
+  transition: all 0.22s; z-index: 5;
+}
+.modal-close:hover { background: rgba(0,200,232,0.1); color: var(--cyan); border-color: var(--cyan); }
+
+.modal-inner { padding: 1.5rem 2.8rem 3.5rem; clear: both; }
+
+.modal-tag {
+  font-family: var(--font-mono); font-size: 0.58rem;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 0.65rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.modal-tag::before { content: '//'; opacity: 0.35; }
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2.3rem);
+  font-weight: 800; line-height: 1.08; margin-bottom: 0.45rem;
+  background: linear-gradient(135deg, var(--text-primary), rgba(180,215,255,0.6));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.modal-org { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); margin-bottom: 1.8rem; }
+
+.modal-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+.chip {
+  font-family: var(--font-mono); font-size: 0.58rem;
+  letter-spacing: 0.1em; padding: 0.24rem 0.8rem;
+  border: 1px solid;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+}
+.chip-c { background: rgba(0,200,232,0.06); border-color: rgba(0,200,232,0.2); color: var(--cyan); }
+.chip-g { background: rgba(0,232,160,0.06); border-color: rgba(0,232,160,0.2); color: var(--green); }
+.chip-a { background: rgba(255,170,0,0.06); border-color: rgba(255,170,0,0.2); color: var(--amber); }
+.chip-v { background: rgba(155,77,255,0.06); border-color: rgba(155,77,255,0.2); color: var(--violet); }
+
+.modal-divider { height: 1px; background: rgba(0,200,232,0.06); margin: 1.8rem 0; }
+.modal-section { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); margin-bottom: 1.1rem; }
+.modal-p { font-size: 0.88rem; font-weight: 300; color: var(--text-secondary); line-height: 1.9; margin-bottom: 0.9rem; }
+
+.modal-gallery { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.5rem; }
+.gallery-item {
+  aspect-ratio: 4/3; background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden; position: relative;
+  transition: border-color 0.25s;
+}
+.gallery-item img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: transform 0.5s; }
+.gallery-item:hover img { transform: scale(1.06); }
+.gallery-item:hover { border-color: var(--border-hi); }
+.gallery-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 4px 8px; z-index: 2;
+  background: rgba(3,5,10,0.8); backdrop-filter: blur(4px);
+  font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-muted);
+}
+
+.modal-docs { display: flex; flex-direction: column; gap: 0.5rem; }
+.doc-link {
+  display: flex; align-items: center; gap: 0.9rem;
+  padding: 0.85rem 1.1rem;
+  background: rgba(11,22,36,0.7); border: 1px solid var(--border);
+  border-left: 2px solid transparent;
+  color: var(--text-primary); text-decoration: none;
+  font-family: var(--font-mono); font-size: 0.7rem;
+  transition: all 0.22s;
+}
+.doc-link:hover { border-left-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+.doc-meta { margin-left: auto; font-size: 0.56rem; color: var(--text-muted); }
+
+/* Keyframe utilities */
+@keyframes fadeRise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: rgba(0,200,232,0.18); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links, .nav-status { display: none; }
+  .about-grid { grid-template-columns: 1fr; gap: 3.5rem; }
+  .photo-frame { max-width: 260px; }
+  .stats { grid-template-columns: repeat(2,1fr); }
+  .skills-wrap { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; gap: 4rem; }
+  .exp-item { grid-template-columns: 80px 1fr; }
+  .exp-date-col { padding-left: 1rem; }
+  .modal-inner { padding: 1rem 1.4rem 2.5rem; }
+  .modal-gallery { grid-template-columns: repeat(2,1fr); }
+  :root { --section-gap: 6rem; }
+  .hero-rings, .radar-sweep { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Animated background canvas -->
+<canvas id="bg-canvas"></canvas>
+<div class="hud-grid"></div>
+
+<!-- Custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ==================== NAV ==================== -->
+<nav id="mainNav">
+  <div class="nav-brand">
+    <div class="nav-brand-dot"></div>
+    FA · AERO
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#experience">experience</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-pip"></div>
+    ALT 35 000 FT above University of Minho
+  </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section id="hero">
+  <div class="hero-rings">
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+    <div class="ring ring-4"></div>
+    <div class="ring ring-5"></div>
+  </div>
+  <div class="radar-sweep"></div>
+
+  <div class="hero-badge">
+    <div class="status-pip"></div>
+    Based in Portugal · Open to international opportunities
+  </div>
+
+  <h1 class="hero-name">
+    <span class="first">Francisco</span>
+    <span class="last">Araújo</span>
+  </h1>
+
+  <p class="hero-title">
+    University of Minho
+    <span class="divider">◆</span>
+    Propulsion
+    <span class="divider">◆</span>
+    Structures
+    <span class="divider">◆</span>
+    Sustainability
+  </p>
+
+  <p class="hero-desc">Specialising in propulsion, aeronautical structures and sustainable aviation. Building the future of Portuguese aerospace, one system at a time.</p>
+
+  <div class="hero-actions">
+    <a href="#experience" class="btn-cta">View Experience</a>
+    <a href="#contact" class="btn-ghost">Get in Touch</a>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>scroll</span>
+    <div class="scroll-track"></div>
+  </div>
+</section>
+
+<!-- ==================== ABOUT ==================== -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+
+      <!-- Left: photo + education -->
+      <div class="reveal">
+        <div class="photo-wrap">
+          <div class="photo-frame">
+            <img src="fotoo.jpg" alt="Francisco Araújo">
+            <div class="hud-corner tl"></div>
+            <div class="hud-corner tr"></div>
+            <div class="hud-corner bl"></div>
+            <div class="hud-corner br"></div>
+          </div>
+        </div>
+        <div class="edu-list">
+          <div class="edu-item">
+            <div class="edu-deg">M.Sc. Aerospace Engineering</div>
+            <div class="edu-meta">University of Minho · Present</div>
+          </div>
+          <div class="edu-item">
+            <div class="edu-deg">B.Sc. Aerospace Engineering</div>
+            <div class="edu-meta">University of Minho · Oct 2023 – Jun 2025</div>
+          </div>
+          <div class="edu-item">
+            <div class="edu-deg">B.Sc. Aeronautical Engineering</div>
+            <div class="edu-meta">UBI · Sep 2021 – Jun 2023</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: bio + stats -->
+      <div class="about-body reveal delay-2">
+        <div class="sec-label">01 — About me</div>
+        <h2 class="sec-title">Engineer,<br><span class="hi">team builder,</span><br>dreamer.</h2>
+        <br>
+        <p>Aerospace Engineering Master's student with a deep passion for <strong>propulsion, aeronautical structures and sustainable aviation</strong>. I thrive at the intersection of rigorous engineering and bold ambition.</p>
+        <p>I gained real industry experience at <strong>CEiiA</strong>, contributing to the development of the <strong>LUS 222</strong> — the first aircraft ever developed entirely in Portugal. I currently lead the Propulsion Department at <strong>MAST</strong>, competing in the European Rocketry Challenge (EuRoC).</p>
+        <p>Proficient in <strong>CATIA V5, Nastran, ANSYS, SolidWorks</strong> and Solid Edge. Fluent in Portuguese and English.</p>
+
+        <div class="stats">
+          <div class="stat-card">
+            <span class="stat-val">AeroUM</span>
+            <span class="stat-lbl">Volunteer</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-val" style="color:var(--green)">EuRoC</span>
+            <span class="stat-lbl">Competition</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-val" style="color:var(--amber)">CEiiA</span>
+            <span class="stat-lbl">Internship</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-val" style="color:var(--violet)">AAUM</span>
+            <span class="stat-lbl">Volunteer</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EXPERIENCE ==================== -->
+<section id="experience">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">02 — Experience</div>
+      <h2 class="sec-title">Professional <span class="hi">Background</span></h2>
+    </div>
+
+    <div class="exp-list reveal delay-2">
+
+      <div class="exp-item" onclick="openModal('euroc')">
+        <div class="exp-date-col">Nov 2024<br>Present</div>
+        <div class="exp-content-col">
+          <div class="exp-info">
+            <div class="exp-num">001</div>
+            <div class="exp-role">Head of Propulsion Department</div>
+            <div class="exp-org">MAST · Guimarães</div>
+            <div class="exp-brief">Leading rocket propulsion design for EuRoC — Europe's top university rocketry challenge.</div>
+          </div>
+          <div class="exp-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="exp-item v-green" onclick="openModal('aeroum-vd')">
+        <div class="exp-date-col">Oct 2024<br>Oct 2025</div>
+        <div class="exp-content-col">
+          <div class="exp-info">
+            <div class="exp-num">002</div>
+            <div class="exp-role">Vice-Director for Science & Recreation</div>
+            <div class="exp-org">AeroUM · Guimarães</div>
+            <div class="exp-brief">Designed the association's scientific and recreational programme, managing workshops, talks and events.</div>
+          </div>
+          <div class="exp-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="exp-item v-green" onclick="openModal('aeroum-fc')">
+        <div class="exp-date-col">Oct 2024<br>Oct 2025</div>
+        <div class="exp-content-col">
+          <div class="exp-info">
+            <div class="exp-num">003</div>
+            <div class="exp-role">President of the Fiscal Council</div>
+            <div class="exp-org">AeroUM · Guimarães</div>
+            <div class="exp-brief">Independent financial oversight, auditing accounts and ensuring full institutional compliance.</div>
+          </div>
+          <div class="exp-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="exp-item v-violet" onclick="openModal('drone')">
+        <div class="exp-date-col">Oct 2024<br>Present</div>
+        <div class="exp-content-col">
+          <div class="exp-info">
+            <div class="exp-num">004</div>
+            <div class="exp-role">Trainee — Drone Engine Vibration Attenuation</div>
+            <div class="exp-org">IEE-Chapter · Guimarães</div>
+            <div class="exp-brief">R&D into passive and active vibration attenuation strategies for UAV powertrains.</div>
+          </div>
+          <div class="exp-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="exp-item v-amber" onclick="openModal('lus222')">
+        <div class="exp-date-col">Jul 2024<br>Aug 2024</div>
+        <div class="exp-content-col">
+          <div class="exp-info">
+            <div class="exp-num">005</div>
+            <div class="exp-role">Shaping the Future Aeronautics — Internship</div>
+            <div class="exp-org">CEiiA · Évora</div>
+            <div class="exp-brief">Contributed to cockpit development for LUS 222, Portugal's first nationally designed aircraft.</div>
+          </div>
+          <div class="exp-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="exp-item v-green" onclick="openModal('sustainability')">
+        <div class="exp-date-col">Jan 2025<br>Jan 2026</div>
+        <div class="exp-content-col">
+          <div class="exp-info">
+            <div class="exp-num">006</div>
+            <div class="exp-role">Director for Sustainability</div>
+            <div class="exp-org">AAUMinho · Guimarães</div>
+            <div class="exp-brief">Directing environmental and social responsibility projects across the university student body.</div>
+          </div>
+          <div class="exp-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="exp-item v-amber" onclick="openModal('dac')">
+        <div class="exp-date-col">Oct 2021<br>Mar 2022</div>
+        <div class="exp-content-col">
+          <div class="exp-info">
+            <div class="exp-num">007</div>
+            <div class="exp-role">DAC Challenge</div>
+            <div class="exp-org">DAC Challenge · Covilhã</div>
+            <div class="exp-brief">Led manufacturing operations in a national aeronautics competition — achieved 2nd place.</div>
+          </div>
+          <div class="exp-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="exp-item v-violet" onclick="openModal('f1schools')">
+        <div class="exp-date-col">Dec 2020<br>Jun 2021</div>
+        <div class="exp-content-col">
+          <div class="exp-info">
+            <div class="exp-num">008</div>
+            <div class="exp-role">Team Leader — F1 in Schools</div>
+            <div class="exp-org">F1 in Schools · Felgueiras</div>
+            <div class="exp-brief">Led design and manufacture of a miniature F1 car, qualifying for the national stage.</div>
+          </div>
+          <div class="exp-arrow">→</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SKILLS ==================== -->
+<section id="skills">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">03 — Skills</div>
+      <h2 class="sec-title">Tools & <span class="hi">Expertise</span></h2>
+    </div>
+
+    <div class="skills-wrap">
+      <!-- CAD / CAE -->
+      <div class="skill-card reveal delay-1">
+        <div class="skill-header">
+          <div class="skill-icon" style="background:rgba(0,200,232,0.08)">🛠</div>
+          <div class="skill-label" style="color:var(--cyan)">CAD / CAE</div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">CATIA V5</span><span class="skill-pct">Proficient</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="90" style="background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">SolidWorks</span><span class="skill-pct">Proficient</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="85" style="background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">Solid Edge</span><span class="skill-pct">Proficient</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="80" style="background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">ANSYS</span><span class="skill-pct">Expert</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="95" style="background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">Nastran</span><span class="skill-pct">Working</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="68" style="background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div>
+        </div>
+      </div>
+
+      <!-- Technical Areas -->
+      <div class="skill-card reveal delay-2">
+        <div class="skill-header">
+          <div class="skill-icon" style="background:rgba(0,232,160,0.08)">✈</div>
+          <div class="skill-label" style="color:var(--green)">Technical Areas</div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">Rocket Propulsion</span><span class="skill-pct">Expert</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="95" style="background:linear-gradient(90deg,var(--green),#40ffb8)"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">Aircraft Structures</span><span class="skill-pct">Advanced</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="80" style="background:linear-gradient(90deg,var(--green),#40ffb8)"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">Aerodynamics</span><span class="skill-pct">Advanced</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="80" style="background:linear-gradient(90deg,var(--green),#40ffb8)"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">Component Design</span><span class="skill-pct">Intermediate</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="70" style="background:linear-gradient(90deg,var(--green),#40ffb8)"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-row-top"><span class="skill-name">Sustainability</span><span class="skill-pct">Expert</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="95" style="background:linear-gradient(90deg,var(--green),#40ffb8)"></div></div>
+        </div>
+      </div>
+
+      <!-- Soft Skills -->
+      <div class="skill-card reveal delay-3">
+        <div class="skill-header">
+          <div class="skill-icon" style="background:rgba(255,170,0,0.08)">🤝</div>
+          <div class="skill-label" style="color:var(--amber)">Soft Skills</div>
+        </div>
+        <div class="tags-wrap">
+          <span class="tag">Leadership</span>
+          <span class="tag">Team Management</span>
+          <span class="tag">Problem-Solving</span>
+          <span class="tag">Communication</span>
+          <span class="tag">Event Logistics</span>
+          <span class="tag">Organisation</span>
+          <span class="tag">High-Pressure Delivery</span>
+          <span class="tag">Collaboration</span>
+          <span class="tag">Financial Oversight</span>
+          <span class="tag">Stakeholder Mgmt</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONTACT ==================== -->
+<section id="contact">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">04 — Contact</div>
+      <h2 class="sec-title">Let's build<br><span class="hi">something</span><br>great.</h2>
+    </div>
+
+    <div class="contact-grid">
+      <div class="reveal delay-1">
+        <p class="contact-text">Open to internships, research projects and opportunities in the aerospace industry. Based in Portugal, available internationally.</p>
+        <div class="contact-links">
+          <a href="mailto:franciscoaraujo@email.com" class="contact-link">
+            <span class="contact-link-icon">✉</span> franciscoaraujo@email.com
+          </a>
+          <a href="tel:+351926334565" class="contact-link">
+            <span class="contact-link-icon">📞</span> +351 926 334 565
+          </a>
+          <a href="https://linkedin.com" target="_blank" class="contact-link">
+            <span class="contact-link-icon">🔗</span> LinkedIn Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="contact-right reveal delay-2">
+        <h3>Download my CV</h3>
+        <p class="contact-note">Get a full overview of my academic background, technical skills and all professional experiences in a single document.</p>
+        <a href="cvatualizado.pdf" download class="cv-btn"><span>↓ Download CV</span></a>
+        <div class="status-box">
+          <p>Currently open to <strong>Summer 2026 internships</strong> and part-time research roles. Comfortable with remote, hybrid or on-site positions in Portugal and abroad.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <span class="footer-brand">FA · AERO</span>
+  <span>Francisco Araújo · M.Sc. Aerospace Engineering · Guimarães, Portugal</span>
+  <span>© 2026</span>
+</footer>
+
+<!-- ==================== MODAL ==================== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-panel" id="modalPanel">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-inner" id="modalInner"></div>
+  </div>
+</div>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+/* ============================================================
+   CANVAS: animated starfield + drifting aurora blobs
+   ============================================================ */
+(function () {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [], auroras = [];
+
+  function resize() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    const count = Math.floor(W * H / 3200);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.18,
+        a: Math.random(),
+        da: (Math.random() * 0.004 + 0.001) * (Math.random() > 0.5 ? 1 : -1),
+        min: 0.05, max: Math.random() * 0.5 + 0.2
+      });
+    }
+    // Slightly brighter nav-star type dots
+    for (let i = 0; i < 8; i++) {
+      stars.push({
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() * 1.8 + 1.1,
+        a: 0.65, da: 0.002, min: 0.3, max: 0.9, nav: true
+      });
+    }
+
+    // Aurora blobs
+    auroras = [
+      { x: W * 0.12, y: H * 0.18, rx: 500, ry: 300, color: '0,160,200', a: 0.12, da: 0.0003 },
+      { x: W * 0.88, y: H * 0.75, rx: 450, ry: 280, color: '80,0,160', a: 0.07, da: 0.0002 },
+      { x: W * 0.5,  y: H * 0.45, rx: 380, ry: 220, color: '0,180,120', a: 0.055, da: 0.00025 },
+    ];
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw aurora blobs
+    auroras.forEach(b => {
+      b.a += b.da; if (b.a > 0.18 || b.a < 0.04) b.da *= -1;
+      const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, Math.max(b.rx, b.ry));
+      g.addColorStop(0, `rgba(${b.color},${b.a})`);
+      g.addColorStop(1, 'transparent');
+      ctx.save();
+      ctx.scale(1, b.ry / b.rx);
+      ctx.beginPath();
+      ctx.arc(b.x, b.y * (b.rx / b.ry), b.rx, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // Draw stars
+    stars.forEach(s => {
+      s.a += s.da;
+      if (s.a > s.max || s.a < s.min) s.da *= -1;
+      if (s.nav) {
+        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 6);
+        g.addColorStop(0, `rgba(0,200,232,${s.a * 0.22})`);
+        g.addColorStop(1, 'transparent');
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 6, 0, Math.PI * 2);
+        ctx.fillStyle = g; ctx.fill();
+      }
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.nav ? `rgba(210,240,255,${s.a})` : `rgba(180,215,245,${s.a})`;
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  resize(); initStars(); draw();
+  window.addEventListener('resize', () => { resize(); initStars(); });
+})();
+function updateCursorEvents() {
+  document.querySelectorAll('a, button, .exp-item, .skill-card, .doc-link, .gallery-item').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+}
+
+// Chama a função ao carregar a página
+updateCursorEvents();
+/* ============================================================
+   CUSTOM CURSOR
+   ============================================================ */
+const dot  = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; 
+  my = e.clientY;
+  dot.style.left = mx + 'px'; 
+  dot.style.top = my + 'px';
+});
+(function movRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(movRing);
+})();
+
+document.querySelectorAll('a, button, .exp-item, .skill-card, .stat-card, .edu-item').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+});
+
+/* ============================================================
+   SMOOTH SCROLL
+   ============================================================ */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+/* ============================================================
+   NAV SCROLL CLASS
+   ============================================================ */
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', scrollY > 60);
+});
+
+/* ============================================================
+   REVEAL ON SCROLL (IntersectionObserver)
+   ============================================================ */
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+/* ============================================================
+   SKILL BARS (animate when visible)
+   ============================================================ */
+const barObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.bar-fill').forEach(b => { b.style.width = b.dataset.w + '%'; });
+    }
+  });
+}, { threshold: 0.25 });
+document.querySelectorAll('.skill-card').forEach(c => barObs.observe(c));
+
+/* ============================================================
+   MODAL DATA
+   ============================================================ */
+const MODAL_DATA = {
+  lus222: {
+    tag: 'Industry Internship',
+    title: 'LUS 222 Cockpit Development',
+    org: 'CEiiA · Évora · Jul – Aug 2024',
+    chips: [['CEiiA','chip-a'],['Industry','chip-c'],['CATIA V5','chip-c'],['Nastran','chip-g']],
+    desc: [
+      'During the "Shaping the Future Aeronautics" summer internship at CEiiA (Centre of Engineering and Product Development) in Évora, I contributed to one of the most significant aerospace milestones in Portugal — the LUS 222, the first aircraft ever developed entirely in Portugal.',
+      'My primary responsibility was supporting the design and validation of a functional cockpit mock-up. This involved translating complex design requirements into precise 3D models using CATIA V5, followed by structural simulations with Nastran to ensure compliance with usability and safety standards.',
+      'Working within a multidisciplinary engineering team, I gained first-hand experience with real industry workflows, documentation standards and the iterative design-validate cycle typical in certified aeronautical development.'
+    ],
+    gallery: [['images/lus222.jpg','Lus 222'],['images/ceiia dip.jpg','Diploma'],['images/part.jpg','Interns team'],['images/cock.jpg','3D model'],['images/co.jpg','Cockpit sketch'],['images/sim.jpg','Nastran Simulations']],
+    docs: [['📄', 'Recommendation Letter — CEiiA', 'PDF · 1.10 MB', 'docs/ceiiacarta.pdf'],['📄','PowerPoint presentation — CEiiA','PDF · 1.01 MB','docs/ceiiappt.pdf']]
+  },
+  euroc: {
+    tag: 'Competition / Rocketry',
+    title: 'EuRoC Rocket — Propulsion Lead',
+    org: 'MAST · Guimarães · Nov 2024 – Present',
+    chips: [['EuRoC','chip-v'],['Active','chip-v'],['Propulsion','chip-c'],['Team Lead','chip-g']],
+    desc: [
+      "As Head of the Propulsion Department at MAST (Minho Aerospace Student Team), I lead the engineering effort behind the propulsion subsystem of our competition rocket for the EuRoC — one of Europe's most prestigious university rocketry competitions.",
+      'My work spans the full propulsion development cycle: from initial motor selection and thrust curve analysis, through CFD simulations and solid propellant grain geometry design, all the way to static test planning and performance validation.',
+      'I coordinate closely with the aerodynamics, structures and avionics sub-teams to ensure propulsion integration is seamless with the vehicle\'s overall mission profile.'
+    ],
+    gallery: [['images/prop1.jpg','Team'],['images/prop2.jpg','Flight computer prototype'],['images/prop3.jpg','Static test first motor prototype'],['images/prop4.jpg','Fuel preparation'],['images/prop5.jpg','Building the first rocket prototype'],['images/prop6.jpg','Calculations']],
+    docs: [['📄', 'Rocket Development Report', 'PDF · 1.80 MB', 'docs/relprop.pdf'],['📄', 'PowerPoint presentation', 'PDF · 11.70 MB', 'docs/pptprpop.pdf'],['📄', 'Spreadsheet', 'xlsx · 1.87 MB', 'docs/excel.xlsx']]
+  },
+  drone: {
+    tag: 'R&D / Vibration',
+    title: 'Drone Engine Vibration Attenuation',
+    org: 'IEE-Chapter · Guimarães · Oct 2024 – Present',
+    chips: [['R&D','chip-v'],['Active','chip-v'],['IEE-Chapter','chip-c'],['UAVs','chip-g']],
+    desc: [
+      'As a Trainee at the IEE-Chapter at the University of Minho, I am involved in an active research project focused on mitigating engine-induced vibrations in unmanned aerial vehicles (UAVs/drones). Vibration is a critical factor in drone structural integrity, sensor accuracy and battery lifetime.',
+      'The project involves characterising the vibrational signatures of different motor-propeller combinations, identifying dominant frequency modes through experimental and numerical methods, and evaluating passive (rubber isolators, damping mounts) and active attenuation strategies.',
+      'This work combines hands-on experimental testing with analytical modelling (modal analysis, frequency response functions) and sits at the intersection of structural dynamics and mechatronics.'
+    ],
+    gallery: [['images/anti1.jpg','Prototype 1'],['images/anti2.jpg','Entire drone anti vibration system'],['images/anti3.jpg','Final Prototype']]
+  },
+  dac: {
+    tag: 'Competition · 2nd Place 🥈',
+    title: 'DAC Challenge',
+    org: 'DAC Challenge · Covilhã · Oct 2021 – Mar 2022',
+    chips: [['Competition','chip-v'],['2nd Place','chip-a'],['Manufacturing','chip-c']],
+    desc: [
+      'The DAC Challenge is a student competition testing teams in the design, manufacturing and presentation of aeronautical components. As Chief of Manufacturing, I was responsible for overseeing all production operations within the team.',
+      'This included managing the workshop schedule, ensuring material and tooling availability, enforcing quality control at each manufacturing stage, and coordinating closely with the design sub-team to resolve any discrepancies between CAD models and physical parts.',
+      "The team's effort culminated in a second-place finish — a result that validated the precision and discipline brought to the manufacturing process."
+    ],
+    gallery: [['images/dac.jpg','Team'],['images/daac2.jpg','Concept'],['images/daac7.jpg','Start of construction'],['images/daac3.jpg','Final version'],['images/daac4.jpg','Hangar Testing'],['images/daac8.jpg','Proud Team']]
+  },
+  'aeroum-vd': {
+    tag: 'Leadership / Events',
+    title: 'Vice-Director for Science and Recreation',
+    org: 'AeroUM · Guimarães · Oct 2024 – Oct 2025',
+    chips: [['AeroUM','chip-g'],['Leadership','chip-c'],['Events','chip-g']],
+    desc: [
+      "As Vice-Director for Science and Recreation at AeroUM — the aerospace student association of the University of Minho — I was responsible for designing and delivering the association's scientific and recreational programme.",
+      'This involved organising workshops, seminars and talks featuring industry professionals and researchers, as well as recreational initiatives that combined technical learning with engaging activities to foster community within the student body.',
+      'I also led cross-functional teams across the event lifecycle — from concept and planning through logistics and execution — and established partnerships with academic departments and industry organisations.'
+    ],
+    gallery: [['images/aeroum1.jpg','Aerospace Student Group 2024'],['images/aeroum2.jpg','Aerospace conferences 2024'],['images/aeroum3.jpg','AeroUM joined Euroavia'],['images/aeroum4.jpg','TAP Visit'],['images/aeroum5.jpg','PCB design Workshop'],['images/aeroum6.jpg','Welding Workshop']]
+  },
+  'aeroum-fc': {
+    tag: 'Governance / Finance',
+    title: 'President of the Fiscal Council',
+    org: 'AeroUM · Guimarães · Oct 2025 – Present',
+    chips: [['AeroUM','chip-g'],['Governance','chip-c'],['Finance','chip-a']],
+    desc: [
+      'I serve as President of the Fiscal Council at AeroUM. This body is responsible for the independent financial oversight of the association, ensuring that all accounts are managed with full transparency and in compliance with university and legal regulations.',
+      'My duties include reviewing and auditing financial statements, approving budgets, monitoring expenditure against approved allocations, and producing reports for the general assembly.',
+      'The role sharpened my understanding of organisational governance and the importance of financial rigour in student-led organisations.'
+    ],
+    gallery: [['images/aeroumm1.jpg','Aerospace Student Group 2025'],['images/aeroumm2.jpg','Student Conferences 2025'],['images/aeroumm3.jpg','Some sponsors']]
+  },
+  f1schools: {
+    tag: 'Competition / Design',
+    title: 'F1 in Schools — National Qualifier',
+    org: 'F1 in Schools · Felgueiras · Dec 2020 – Jun 2021',
+    chips: [['Team Lead','chip-g'],['National Stage','chip-v'],['Design','chip-c']],
+    desc: [
+      'F1 in Schools is an international STEM challenge where student teams design, manufacture and race miniature Formula 1 cars powered by CO₂ cartridges. Teams are judged on car performance, engineering portfolio, verbal presentation and enterprise.',
+      'As Team Leader, I coordinated all aspects of our participation: assigning roles, managing the project timeline, overseeing the car\'s aerodynamic design and CNC machining, and preparing the team\'s engineering portfolio and verbal presentation.',
+      'Qualifying for the national stage was a significant milestone — it required not only a fast car but also a compelling engineering narrative and professional presentation.'
+    ],
+    gallery: [['images/f11.jpg','Team'],['images/f12.jpg','The car'],['images/f13.jpg','Competition']],
+    docs: [['📄','Engineering Portfolio','PDF · 5.77 MB','docs/adamastor.pdf']]
+  },
+  sustainability: {
+    tag: 'Leadership / ESG',
+    title: 'University Sustainability Initiative',
+    org: 'AAUMinho · Guimarães · Jan 2025 – Jan 2026',
+    chips: [['Sustainability','chip-g'],['ESG','chip-g'],['NGO Partnerships','chip-c']],
+    desc: [
+      'In my role as Director for Sustainability at the Academic Association of the University of Minho (AAUMinho), I design and implement initiatives that integrate environmental and social responsibility into the student experience — from campus green projects to awareness campaigns.',
+      'A key part of the role involves building and maintaining partnerships with NGOs, local government bodies and academic departments to co-develop projects with measurable environmental impact.',
+      'The position has strengthened my understanding of how engineering decisions intersect with broader societal and environmental goals — a perspective I aim to carry into my aerospace career.'
+    ],
+    gallery: [['images/aauminho1.jpg','Serving the academic community'],['images/aauminho3.jpg','Flea market'],['images/aauminho2.jpg','Helping students'],['images/aauminhoo1.jpg','Arbor Day'],['images/aauminhoo2.jpg','Raising awareness'],['images/aauminho6.jpg','Sustainability talks']],
+    docs: [['📄','ODS Report','PDF · 0.64 MB','docs/ods.pdf']]
+  }
+};
+
+/* ============================================================
+   MODAL OPEN/CLOSE
+   ============================================================ */
+const overlay = document.getElementById('modalOverlay');
+const inner   = document.getElementById('modalInner');
+const closeBtn= document.getElementById('modalClose');
+
+function openModal(id) {
+  const d = MODAL_DATA[id]; if (!d) return;
+
+  const chips = d.chips.map(([l,c]) => `<span class="chip ${c}">${l}</span>`).join('');
+  const desc  = d.desc.map(p => `<p class="modal-p">${p}</p>`).join('');
+
+  let gallery = '';
+  if (d.gallery && d.gallery.length) {
+    gallery = `<div class="modal-divider"></div>
+    <div class="modal-section">Gallery</div>
+    <div class="modal-gallery">${d.gallery.map(([src, lbl]) =>
+      `<div class="gallery-item"><img src="${src}" alt="${lbl}" loading="lazy"><span class="gallery-caption">${lbl}</span></div>`
+    ).join('')}</div>`;
+  }
+
+  let docs = '';
+  if (d.docs && d.docs.length) {
+    docs = `
+      <div class="modal-divider"></div>
+      <div class="modal-section">Documents</div>
+      <div class="modal-docs">
+        ${d.docs.map(([ic, lb, mt, url]) => `
+          <a href="${url || '#'}" target="_blank" class="doc-link">
+            <span>${ic}</span>
+            <span>${lb}</span>
+            <span class="doc-meta">${mt}</span>
+          </a>`
+        ).join('')}
+      </div>`;
+  }
+
+  // O inner.innerHTML usa as variáveis acima para montar o modal
+  inner.innerHTML = `
+    <div class="modal-tag">${d.tag}</div>
+    <h2 class="modal-title">${d.title}</h2>
+    <p class="modal-org">${d.org}</p>
+    <div class="modal-chips">${chips}</div>
+    <div class="modal-divider"></div>
+    <div class="modal-section">Overview</div>
+    ${desc}${gallery}${docs} 
+  `;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modalPanel').scrollTop = 0;
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+closeBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
